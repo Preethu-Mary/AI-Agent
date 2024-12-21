@@ -20,7 +20,7 @@ class ResponseModel(BaseModel):
 
 
 input = InputModel(
-    job_title= "Python Developer",
+    job_title= "React Developer",
     location= "Canada"
 )
 
@@ -35,7 +35,7 @@ agent = Agent(
 
 
 
-def scrape_linkedin_profiles(job_title, location):
+def scrape_linkedin_profiles(input: InputModel):
     # Write the code to scrape the profiles. The scraped data is represented in the profiles list below.
 
     profiles = [
@@ -44,7 +44,7 @@ def scrape_linkedin_profiles(job_title, location):
     ]
 
     filtered_profiles = [
-        profile for profile in profiles if profile['title'] == job_title and profile['location'] == location
+        profile for profile in profiles if profile['title'] == input.job_title and profile['location'] == input.location
     ]
 
     result = '. '.join(f"{profile['name']} is a {profile['title']} in {profile['location']}, their email ID is {profile['email']}" for profile in filtered_profiles)
@@ -54,6 +54,6 @@ def scrape_linkedin_profiles(job_title, location):
 
 
 
-result = agent.run_sync(scrape_linkedin_profiles(input.job_title, input.location))  
+result = agent.run_sync(scrape_linkedin_profiles(input))  
 
 print(result.data.model_dump_json(indent=2))
