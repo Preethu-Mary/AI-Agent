@@ -1,0 +1,18 @@
+{
+    "status": "success",
+    "data": {
+        "runningContainers": 1,
+        "queuedContainers": 0,
+        "messages": [],
+        "progress": {
+            "progress": null,
+            "label": null,
+            "runtime": 6
+        },
+        "agentStatus": "running",
+        "containerId": "4845413654844978",
+        "containerStatus": "running",
+        "output": "(node:1) NOTE: The AWS SDK for JavaScript (v2) will enter maintenance mode\r\non September 8, 2024 and reach end-of-support on September 8, 2025.\r\n\r\nPlease migrate your code to use AWS SDK for JavaScript (v3).\r\nFor more information, check blog post at https://a.co/cUPnyil\r\n(Use `node --trace-warnings ...` to show where the warning was created)\r\n* Container 4845413654844978 started in br-scw-fr-idf-3-greatjon (Sat Dec 28 2024 02:26:45 GMT+0000 (Coordinated Universal Time))\r\n* Got dependency LinkedIn Search Export.js\r\n* Spawning Node v16.20.2\r\n* using version 1.576.0\r\n\u2139\ufe0f Input: Mary george\r\n\u2139\ufe0f Lines to process: [\r\n    \"Mary george\"\r\n]\r\n\u2139\ufe0f Number of results to scrape per launch: 5\r\n\u2139\ufe0f Number of results to scrape per search: 1000\r\n\ud83d\udd04 Connecting to LinkedIn...\r\n",
+        "outputPos": 765
+    }
+}
