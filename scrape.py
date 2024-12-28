@@ -19,14 +19,13 @@ def start_phantom():
     payload = {
         "argument": {
             "sessionCookie": LINKEDIN_COOKIE,
-            "search": "Mary george",  # Specify your LinkedIn search query
+            "search": "elna",  # Specify your LinkedIn search query
             "numberOfResultsPerLaunch": 5,
             "numberOfResultsPerSearch": 5,
         },
     }
     
     response = requests.post(url, headers=headers, json=payload)
-    print(response.json())
     
     if response.status_code == 200:
         print("Phantom started successfully!")
@@ -35,44 +34,48 @@ def start_phantom():
         print("Error starting Phantom:", response.text)
         return None
 
-# Function to retrieve the results
-def get_results(container_id):
-    url = f"https://api.phantombuster.com/api/v1/agent/{PHANTOM_ID}/output?containerId={container_id}"
+def get_result_file_url():
+    # API endpoint to fetch Phantom details
+    url = f"https://api.phantombuster.com/api/v2/agents/fetch"
+
     headers = {
         "X-Phantombuster-Key-1": API_KEY,
     }
-    
-    response = requests.get(url, headers=headers)
-    
+    payload = {
+        "id": PHANTOM_ID  # Provide the Phantom ID
+    }
+
+    # Make the API call
+    response = requests.get(url, headers=headers, params=payload)
+
     if response.status_code == 200:
-        print("Results retrieved successfully!")
-        return response.json()
+        
+        # Extract s3Folder and orgS3Folder
+        s3_folder = response.json().get("s3Folder")
+        org_s3_folder = response.json().get("orgS3Folder")
+
+        if s3_folder and org_s3_folder:
+            # Construct the JSON and CSV URLs
+            json_url = f"https://phantombuster.s3.amazonaws.com/{org_s3_folder}/{s3_folder}/result.json"
+            csv_url = f"https://phantombuster.s3.amazonaws.com/{org_s3_folder}/{s3_folder}/result.csv"
+            return {"JSON": json_url, "CSV": csv_url}
+        else:
+            print("Error: s3Folder or orgS3Folder not found in the response.")
+            return None
     else:
-        print("Error retrieving results:", response.text)
+        print(f"Error fetching Phantom details: {response.text}")
         return None
 
 # Main Script
 if __name__ == "__main__":
     # Start the Phantom
-    phantom_data = start_phantom()
-    
-    if phantom_data:
-        container_id = phantom_data.get("data", {}).get("containerId")
-        if container_id:
-            print("Container ID:", container_id)
-        else:
-            print("containerId not found in the response")
+        phantom_data = start_phantom()
         
-        # Wait for Phantom to complete execution
+        # # Wait for Phantom to complete execution
         import time
-        time.sleep(5)  # Adjust based on Phantom's estimated run time
+        time.sleep(25)
+
+        result_urls = get_result_file_url()
+        if result_urls:
+            print(f"JSON File: {result_urls['JSON']}")
         
-        # Fetch the results
-        results = get_results(container_id)
-        time.sleep(5)
-        
-        # Save or display the results
-        if results:
-            with open("linkedin_results.json", "w") as file:
-                json.dump(results, file, indent=4)
-            print("Results saved to linkedin_results.json")
