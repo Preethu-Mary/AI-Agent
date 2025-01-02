@@ -30,7 +30,7 @@ class ResponseModel(BaseModel):
     profile_url: str
 
 input = InputModel(
-    search= "React Developer", # Input list of keywords liek "ceo, paris" or a linkedinUrl with filters
+    search= "React Developer", # Input list of keywords like "ceo, paris" or a linkedinUrl with filters
     category= "People",
     number_of_results= 1
 )
