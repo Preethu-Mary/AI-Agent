@@ -8,7 +8,7 @@ import os
 
 load_dotenv()
 
-API_KEY = os.getenv('API_KEY')
+API_KEY = os.getenv('API_KEY') # PhantomBuster API Key
 PHANTOM_ID = os.getenv('PHANTOM_ID')
 LINKEDIN_COOKIE = os.getenv('LINKEDIN_COOKIE')
 
