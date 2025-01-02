@@ -30,7 +30,7 @@ class ResponseModel(BaseModel):
     profile_url: str
 
 input = InputModel(
-    search= "React Developer", # Input list of keywords like "ceo, paris" or a linkedinUrl with filters
+    search= "amazon", # Input list of keywords like "ceo, paris" or a linkedinUrl with filters
     category= "People",
     number_of_results= 1
 )
@@ -41,7 +41,7 @@ model = GeminiModel('gemini-1.5-flash', api_key=gemini_api_key)
 agent = Agent(  
     model = model,
     result_type=ResponseModel,
-    system_prompt='Extract all relevant information from the LinkedIn profile data.',  
+    system_prompt='Extract all relevant information from the LinkedIn profile data. if there is no linkedin profile data, provide empty strings',  
 )
 
 
@@ -107,8 +107,6 @@ def get_result_object(container_id):
 
 
 def scrape_linkedin_profiles(input: InputModel):
-    # Write the code to scrape the profiles. The scraped data is represented in the profiles list below.
-
     import time
     # Start the Phantom
     phantom_data = start_phantom(input.search, input.category, input.number_of_results)
@@ -120,7 +118,11 @@ def scrape_linkedin_profiles(input: InputModel):
         if status == "finished":
             print("Container Status is finished!")
             result = get_result_object(container_id).get('resultObject')
-            return result
+            if result:
+                return result
+            else:
+                print("Results are none or those results have already been retrieved before!")
+                return ""
         time.sleep(1) 
 
 result = agent.run_sync(scrape_linkedin_profiles(input))  
