@@ -20,7 +20,7 @@ class InputModel(BaseModel):
     category: str
     number_of_results: int
 
-class ResponseModel(BaseModel):
+class ResponseItemModel(BaseModel):
     full_name: str
     first_name: str
     last_name: str
@@ -29,10 +29,13 @@ class ResponseModel(BaseModel):
     company: str
     profile_url: str
 
+class ResponseModel(BaseModel):
+    results: list[ResponseItemModel]
+
 input = InputModel(
-    search= "amazon", # Input list of keywords like "ceo, paris" or a linkedinUrl with filters
+    search= f"https://www.linkedin.com/search/results/people/?currentCompany=%5B%221038%22%5D&geoUrn=%5B%22102713980%22%5D&keywords=python%20web&network=%5B%22F%22%5D&origin=FACETED_SEARCH&sid=TWa",
     category= "People",
-    number_of_results= 1
+    number_of_results= 3
 )
 
 
@@ -41,7 +44,7 @@ model = GeminiModel('gemini-1.5-flash', api_key=gemini_api_key)
 agent = Agent(  
     model = model,
     result_type=ResponseModel,
-    system_prompt='Extract all relevant information from the LinkedIn profile data. if there is no linkedin profile data, provide empty strings',  
+    system_prompt='Extract all relevant information from the LinkedIn profile data not just one all of them. if there is no linkedin profile data, provide empty strings',  
 )
 
 
