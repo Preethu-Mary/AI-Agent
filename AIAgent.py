@@ -30,7 +30,7 @@ class ResponseModel(BaseModel):
     profile_url: str
 
 input = InputModel(
-    search= "React Developer",
+    search= "React Developer", # Input list of keywords liek "ceo, paris" or a linkedinUrl with filters
     category= "People",
     number_of_results= 1
 )
@@ -122,9 +122,6 @@ def scrape_linkedin_profiles(input: InputModel):
             result = get_result_object(container_id).get('resultObject')
             return result
         time.sleep(1) 
-
-
-
 
 result = agent.run_sync(scrape_linkedin_profiles(input))  
 
