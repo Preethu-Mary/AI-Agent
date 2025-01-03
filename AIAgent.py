@@ -25,20 +25,21 @@ class ResponseItemModel(BaseModel):
     first_name: str
     last_name: str
     job_title: str
+    additionalInfo: str
     location: str
     company: str
+    Industry: str
     profile_url: str
+    profileImageUrl: str
 
 class ResponseModel(BaseModel):
     results: list[ResponseItemModel]
 
 input = InputModel(
-    search= f"https://www.linkedin.com/search/results/people/?currentCompany=%5B%221038%22%5D&geoUrn=%5B%22102713980%22%5D&keywords=python%20web&network=%5B%22F%22%5D&origin=FACETED_SEARCH&sid=TWa",
+    search= "Python Developer, Canada",
     category= "People",
-    number_of_results= 3
+    number_of_results= 2
 )
-
-
 
 model = GeminiModel('gemini-1.5-flash', api_key=gemini_api_key)
 agent = Agent(  
@@ -108,6 +109,31 @@ def get_result_object(container_id):
         print(f"Error fetching Phantom results: {response.text}")
         return None
 
+def get_results_all_csv():
+    url = f"https://api.phantombuster.com/api/v2/agents/fetch?id={PHANTOM_ID}"
+
+    headers = {
+        "accept": "application/json",
+        "X-Phantombuster-Key": API_KEY,
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        # Extract s3Folder and orgS3Folder
+        s3_folder = response.json().get("s3Folder")
+        org_s3_folder = response.json().get("orgS3Folder")
+
+        if s3_folder and org_s3_folder:
+            # Construct the JSON and CSV URLs
+            csv_url = f"https://phantombuster.s3.amazonaws.com/{org_s3_folder}/{s3_folder}/result.csv"
+            return csv_url
+        else:
+            print("Error: s3Folder or orgS3Folder not found in the response.")
+            return None
+    else:
+        print(f"Error fetching Phantom results: {response.text}")
+        return None
 
 def scrape_linkedin_profiles(input: InputModel):
     import time
@@ -120,11 +146,13 @@ def scrape_linkedin_profiles(input: InputModel):
         status = get_container_status(container_id)
         if status == "finished":
             print("Container Status is finished!")
+            print(f"Query: {input}")
             result = get_result_object(container_id).get('resultObject')
+            csv = get_results_all_csv()
             if result:
                 return result
             else:
-                print("Results are none or those results have already been retrieved before!")
+                print(f"Results: Results are none or those results may have already been retrieved. \nPLEASE SEE THE CSV FILE TO VIEW ALL THE PAST RESULTS THAT HAS BEEN FETCHED SO FAR! \n CSV: {csv}")
                 return ""
         time.sleep(1) 
 
